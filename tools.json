@@ -1,0 +1,77 @@
+[
+    {
+        "type": "function",
+        "name": "create_event",
+        "description": "Creates an event on the user's Google Calendar, can also create recurring events.",
+        "parameters": {
+            "type": "object",
+            "description": "The event's body formatted to Google's Event Resource schema, when inputting time use ISO 8601 format (YYYY-MM-DDTHH:MM:SS±HH:MM)",
+            "properties": {
+                "summary": {"type": "string"},
+                "description": {"type": "string"},
+                "start": {
+                    "type": "object",
+                    "properties": {
+                        "dateTime": {"type": "string"},
+                        "timeZone": {"type": "string"}
+                    },
+                    "required": ["dateTime", "timeZone"]
+                },
+                "end": {
+                    "type": "object",
+                    "properties": {
+                        "dateTime": {"type": "string"},
+                        "timeZone": {"type": "string"}
+                    },
+                    "required": ["dateTime", "timeZone"]
+                },
+                    "recurrence": {
+                    "type": "array",
+                    "description": "RFC 5545 recurrence rules (e.g., 'RRULE:FREQ=WEEKLY;COUNT=10'). Omit for one-time events.",
+                    "items": {
+                        "type": "string",
+                        "description": "Single recurrence rule line, e.g., 'RRULE:FREQ=DAILY;COUNT=5' or 'EXDATE;TZID=Asia/Bangkok:20251225T090000'."
+                    }
+                }
+            }
+        },
+        "required": ["summary", "start", "end"]
+    },
+    {
+        "type": "function",
+        "name": "list_events",
+        "description": "Lists the next 'max_amount' of events on user's calendar. Returns the events IDs, summary, and other useful tags.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "start_date": {
+                    "type": "string",
+                    "description": "The lower bound or starting date from which events are going to be listed (already set to current date by default)."
+                },
+                "end_date": {
+                    "type": "string",
+                    "description": "The upper bound or ending date to which events are going to be listed (already set to None by default)."
+                },
+                "max_amount": {
+                    "type": "number",
+                    "description": "Integer value representing the amount of events to be listed (already set to 20 by default)."
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "name": "delete_event",
+        "description": "Deletes an event or recurring event on the user's calendar (requires eventId, use 'list_events' to get it)",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "eventId": {
+                    "type": "string",
+                    "description": "Event identifier."
+                }
+            },
+            "required": ["eventId"]
+        }
+    }
+]
