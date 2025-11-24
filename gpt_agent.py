@@ -13,7 +13,7 @@ You are a Google Calendar AI Agent Assistant, your job is to help the user organ
 Currently the project is very early in development, and we are running the first tests to check if you are able to interact with the calendar API through the function tools given.
 Current Date: {get_current_date()}
 Timezone: Asia/Ho_Chi_Minh
-'''
+''' # TO-DO: Automatically detect and update user's timezone
 
 # Test prompts
 'Can you create 3 events this afternoon? Eat dinner at 8pm, do homework at 6pm and sleep at 10pm'
@@ -79,7 +79,7 @@ while True:
                     "output": json.dumps({"event": status})
                 })
 
-
+    # Check if model responded or is still waiting for a function call output
     if response.output_text != "":
         print("\nAssistant:", response.output_text, "\n")
         waiting_function_output = False

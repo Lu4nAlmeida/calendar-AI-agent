@@ -1,19 +1,26 @@
 import json
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
-from main import set_token
+from google_auth_oauthlib.flow import InstalledAppFlow
 import datetime
 import os
 
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-creds = None
 
-if os.path.exists("token.json"):
-    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-else:
+def set_token():
+    flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+    creds = flow.run_local_server(port=8080)
+
+    # Save the credentials (includes refresh token if offline access was granted)
+    with open("token.json", "w") as token:
+        token.write(creds.to_json())
+
+
+if not os.path.exists("token.json"):
     set_token()
-    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+
+creds = Credentials.from_authorized_user_file("token.json", SCOPES)
 
 
 service = build("calendar", "v3", credentials=creds)
@@ -30,7 +37,7 @@ def delete_event(eventId: str):
         return f"Deleted event: {eventId}"
     except Exception as e:
         print(f"Error in deleting event: {e}")
-        return "Could not delete event due to an error."
+        return f"Could not delete event due to an error: {e}"
 
 
 def edit_event(eventId: str):
@@ -39,7 +46,6 @@ def edit_event(eventId: str):
 
 
 def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
-    # Call the Calendar API
     print(f"Getting the next {max_amount} events")
     if end_date == "":
         end_date = None
@@ -65,7 +71,7 @@ def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
     events_list = []
     for event in events:
         important_keys = ['etag', 'id', 'summary', 'start', 'end', 'recurringEventId', 'reminders', 'eventType']
-        e = {key: event[key] for key in important_keys if key in event}
+        e = {key: event[key] for key in important_keys if key in event} # Filters non-important keys
         events_list.append(e)
 
     return json.dumps(events_list)
@@ -84,9 +90,4 @@ def create_event(event: dict):
 
 # TO-DO: implement update_event, add a search_event function
 
-
 print("testing...")
-'''
-item = "{\"event\":{\"summary\":\"Homework\",\"start\":{\"dateTime\":\"2025-10-16T15:00:00\",\"timeZone\":\"Asia/Ho_Chi_Minh\"},\"end\":{\"dateTime\":\"2025-10-16T16:00:00\",\"timeZone\":\"Asia/Ho_Chi_Minh\"}}}"
-create_event(json.loads(item))
-'''
