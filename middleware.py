@@ -30,7 +30,6 @@ def get_current_date():
 
 
 def delete_event(eventId: str):
-    print(type(eventId), eventId)
     try:
         service.events().delete(calendarId="primary", eventId=eventId).execute()
         print(f"Event {eventId} deleted.")
@@ -39,16 +38,11 @@ def delete_event(eventId: str):
         print(f"Error in deleting event: {e}")
         return f"Could not delete event due to an error: {e}"
 
-
-def edit_event(eventId: str):
-    event = service.events().update(calendarId="primary", eventId=eventId).execute()
-    print(f"Event {event} updated.")
-
-
+# TO-DO: Add error handling
 def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
-    print(f"Getting the next {max_amount} events")
+    print(f"Getting the next {max_amount} events, from {start_date} to {end_date}")
     if end_date == "":
-        end_date = None
+        end_date = None # This is redundant now, but might be useful later
 
     events_result = (
         service.events()
@@ -57,7 +51,7 @@ def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
             timeMin=start_date,
             timeMax=end_date,
             maxResults=max_amount,
-            singleEvents=True,
+            singleEvents=True, # TO-DO: Try some testing with this set to false (more token efficient)
             orderBy="startTime",
 
         )
@@ -70,7 +64,7 @@ def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
 
     events_list = []
     for event in events:
-        important_keys = ['etag', 'id', 'summary', 'start', 'end', 'recurringEventId', 'reminders', 'eventType']
+        important_keys = ['etag', 'id', 'summary', 'description', 'colorId', 'start', 'end', 'creator', 'organizer', 'attendees', 'recurringEventId', 'reminders', 'eventType']
         e = {key: event[key] for key in important_keys if key in event} # Filters non-important keys
         events_list.append(e)
 
@@ -86,8 +80,10 @@ def create_event(event: dict):
         print("❌ Failed to create event:", e)
         return {"status": "error", "message": str(e), "event": event}
 
+# TO-DO: Add error handling
+def update_event(eventId: str, event: dict):
+    service.events().update(calendarId="primary", eventId=eventId, body=event).execute()
+    print(f"Event {eventId} updated.")
 
-
-# TO-DO: implement update_event, add a search_event function
 
 print("testing...")

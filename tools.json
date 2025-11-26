@@ -9,6 +9,7 @@
             "properties": {
                 "summary": {"type": "string"},
                 "description": {"type": "string"},
+                "colorId": {"type": "string"},
                 "start": {
                     "type": "object",
                     "properties": {
@@ -25,14 +26,53 @@
                     },
                     "required": ["dateTime", "timeZone"]
                 },
-                    "recurrence": {
+                "creator": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "string"},
+                        "email": {"type": "string"},
+                        "displayName": {"type": "string"},
+                        "self": {"type": "boolean"}
+                    }
+                },
+                "organizer": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "string"},
+                        "email": {"type": "string"},
+                        "displayName": {"type": "string"},
+                        "self": {"type": "boolean"}
+                    }
+                },
+                "attendees": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "string"},
+                            "email": {"type": "string"},
+                            "displayName": {"type": "string"}
+                        }
+                    }
+                },
+                "reminders": {
+                    "type": "object",
+                    "properties": {
+                        "useDefault": {"type": "boolean"},
+                        "overrides": {
+
+                        }
+                    }
+                },
+                "recurrence": {
                     "type": "array",
                     "description": "RFC 5545 recurrence rules (e.g., 'RRULE:FREQ=WEEKLY;COUNT=10'). Omit for one-time events.",
                     "items": {
                         "type": "string",
                         "description": "Single recurrence rule line, e.g., 'RRULE:FREQ=DAILY;COUNT=5' or 'EXDATE;TZID=Asia/Bangkok:20251225T090000'."
                     }
-                }
+                },
+                "eventType": {"type": "string"}
             }
         },
         "required": ["summary", "start", "end"]
@@ -54,7 +94,7 @@
                 },
                 "max_amount": {
                     "type": "number",
-                    "description": "Integer value representing the amount of events to be listed (already set to 20 by default)."
+                    "description": "Integer value representing the amount of events to be listed (already set to 20 by default | avoid setting this number to more than 50)."
                 }
             }
         }
@@ -69,6 +109,100 @@
                 "eventId": {
                     "type": "string",
                     "description": "Event identifier."
+                }
+            },
+            "required": ["eventId"]
+        }
+    },
+    {
+        "type": "function",
+        "name": "update_event",
+        "description": "Updates an event or recurring event with edits on the user's calendar (requires eventId, use 'list_events' to get it)",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "eventId": {
+                    "type": "string",
+                    "description": "Event identifier."
+                },
+                "event": {
+                    "type": "object",
+                    "description": "The event's body formatted to Google's Event Resource schema, when inputting time use ISO 8601 format (YYYY-MM-DDTHH:MM:SS±HH:MM)",
+                    "properties": {
+                        "summary": {"type": "string"},
+                        "description": {"type": "string"},
+                        "colorId": {"type": "string"},
+                        "start": {
+                            "type": "object",
+                            "properties": {
+                                "dateTime": {"type": "string"},
+                                "timeZone": {"type": "string"}
+                            },
+                            "required": ["dateTime", "timeZone"]
+                        },
+                        "end": {
+                            "type": "object",
+                            "properties": {
+                                "dateTime": {"type": "string"},
+                                "timeZone": {"type": "string"}
+                            },
+                            "required": ["dateTime", "timeZone"]
+                        },
+                        "creator": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "string"},
+                                "email": {"type": "string"},
+                                "displayName": {"type": "string"},
+                                "self": {"type": "boolean"}
+                            }
+                        },
+                        "organizer": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "string"},
+                                "email": {"type": "string"},
+                                "displayName": {"type": "string"},
+                                "self": {"type": "boolean"}
+                            }
+                        },
+                        "attendees": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {"type": "string"},
+                                    "email": {"type": "string"},
+                                    "displayName": {"type": "string"}
+                                }
+                            }
+                        },
+                        "reminders": {
+                            "type": "object",
+                            "properties": {
+                                "useDefault": {"type": "boolean"},
+                                "overrides": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "method": {"type": "string"},
+                                            "minutes": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "recurrence": {
+                            "type": "array",
+                            "description": "RFC 5545 recurrence rules (e.g., 'RRULE:FREQ=WEEKLY;COUNT=10'). Omit for one-time events.",
+                            "items": {
+                                "type": "string",
+                                "description": "Single recurrence rule line, e.g., 'RRULE:FREQ=DAILY;COUNT=5' or 'EXDATE;TZID=Asia/Bangkok:20251225T090000'."
+                            }
+                        },
+                        "eventType": {"type": "string"}
+                    }
                 }
             },
             "required": ["eventId"]

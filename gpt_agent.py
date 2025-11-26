@@ -1,5 +1,5 @@
 from openai import OpenAI
-from middleware import create_event, get_current_date, list_events, delete_event
+from middleware import *
 import json
 from pathlib import Path
 
@@ -10,7 +10,7 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 
 context = f'''
 You are a Google Calendar AI Agent Assistant, your job is to help the user organize their own calendar.
-Currently the project is very early in development, and we are running the first tests to check if you are able to interact with the calendar API through the function tools given.
+Currently the project is early in development, and we are running some tests to check if you are able to interact with the calendar API through the function tools given.
 Current Date: {get_current_date()}
 Timezone: Asia/Ho_Chi_Minh
 ''' # TO-DO: Automatically detect and update user's timezone
@@ -21,6 +21,8 @@ Timezone: Asia/Ho_Chi_Minh
 'Can you delete my next event?'
 'Can you delete my next recurring event?'
 'What is my next event?'
+'Can you create an event called test tomorrow at noon, make it a different color and set a reminder 30 minutes prior?'
+'Could you change the test event name to free time, and make it color red (also remove the reminder)'
 
 # Load tool definitions
 with open('tools.json', 'r') as file:
@@ -77,6 +79,13 @@ while True:
                     "type": "function_call_output",
                     "call_id": item.call_id,
                     "output": json.dumps({"event": status})
+                })
+            elif item.name == "update_event":
+                event = update_event(**args)
+                input_list.append({
+                    "type": "function_call_output",
+                    "call_id": item.call_id,
+                    "output": json.dumps({"event": event})
                 })
 
     # Check if model responded or is still waiting for a function call output
