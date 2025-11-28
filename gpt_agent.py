@@ -2,6 +2,7 @@ from openai import OpenAI
 from middleware import *
 import json
 from pathlib import Path
+from tzlocal import get_localzone
 
 
 OPENAI_API_KEY = Path("api.txt").read_text().strip()
@@ -9,11 +10,11 @@ OPENAI_API_KEY = Path("api.txt").read_text().strip()
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 context = f'''
-You are a Google Calendar AI Agent Assistant, your job is to help the user organize their own calendar.
-Currently the project is early in development, and we are running some tests to check if you are able to interact with the calendar API through the function tools given.
+You are a Google Calendar AI Agent Assistant, your job is to help the user organize their own calendar through the function tools given to you.
+Do not include a follow up question at the end of each response unless trying to clarify something about the user's request.
 Current Date: {get_current_date()}
-Timezone: Asia/Ho_Chi_Minh
-''' # TO-DO: Automatically detect and update user's timezone
+Timezone: {str(get_localzone())}
+'''
 
 # Test prompts
 'Can you create 3 events this afternoon? Eat dinner at 8pm, do homework at 6pm and sleep at 10pm'

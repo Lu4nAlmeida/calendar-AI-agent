@@ -35,40 +35,44 @@ def delete_event(eventId: str):
         print(f"Event {eventId} deleted.")
         return f"Deleted event: {eventId}"
     except Exception as e:
-        print(f"Error in deleting event: {e}")
+        print(f"❌ Error in deleting event: {e}")
         return f"Could not delete event due to an error: {e}"
 
-# TO-DO: Add error handling
+
 def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
-    print(f"Getting the next {max_amount} events, from {start_date} to {end_date}")
     if end_date == "":
         end_date = None # This is redundant now, but might be useful later
 
-    events_result = (
-        service.events()
-        .list(
-            calendarId="primary",
-            timeMin=start_date,
-            timeMax=end_date,
-            maxResults=max_amount,
-            singleEvents=True, # TO-DO: Try some testing with this set to false (more token efficient)
-            orderBy="startTime",
+    try:
+        print(f"Getting the next {max_amount} events, from {start_date} to {end_date}")
+        events_result = (
+            service.events()
+            .list(
+                calendarId="primary",
+                timeMin=start_date,
+                timeMax=end_date,
+                maxResults=max_amount,
+                singleEvents=False, # TO-DO: Try some testing with this set to false (more token efficient)
+                orderBy="startTime",
 
+            )
+            .execute()
         )
-        .execute()
-    )
-    events = events_result.get("items", [])
+        events = events_result.get("items", [])
 
-    if not events:
-        return "No upcoming events found."
+        if not events:
+            return "No upcoming events found."
 
-    events_list = []
-    for event in events:
-        important_keys = ['etag', 'id', 'summary', 'description', 'colorId', 'start', 'end', 'creator', 'organizer', 'attendees', 'recurringEventId', 'reminders', 'eventType']
-        e = {key: event[key] for key in important_keys if key in event} # Filters non-important keys
-        events_list.append(e)
+        events_list = []
+        for event in events:
+            important_keys = ['etag', 'id', 'summary', 'description', 'colorId', 'start', 'end', 'creator', 'organizer', 'attendees', 'recurringEventId', 'reminders', 'eventType']
+            e = {key: event[key] for key in important_keys if key in event} # Filters non-important keys
+            events_list.append(e)
 
-    return json.dumps(events_list)
+        return json.dumps(events_list)
+    except Exception as e:
+        print(f"❌ Error in getting events: {e}")
+        return f"Could not get events due to an error: {e}"
 
 
 def create_event(event: dict):
@@ -78,12 +82,17 @@ def create_event(event: dict):
         return {"status": "success", "link": result.get("htmlLink"), "event": event}
     except Exception as e:
         print("❌ Failed to create event:", e)
-        return {"status": "error", "message": str(e), "event": event}
+        return f"Could not create event due to an error: {e}"
 
-# TO-DO: Add error handling
+
 def update_event(eventId: str, event: dict):
-    service.events().update(calendarId="primary", eventId=eventId, body=event).execute()
-    print(f"Event {eventId} updated.")
+    try:
+        service.events().update(calendarId="primary", eventId=eventId, body=event).execute()
+        print(f"Event {eventId} updated.")
+        return f"Updated event: {eventId}"
+    except Exception as e:
+        print(f"❌ Failed to update event: {e}")
+        return f"Could not update event due to an error: {e}"
 
 
 print("testing...")
