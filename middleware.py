@@ -1,4 +1,5 @@
 import json
+from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -8,17 +9,14 @@ import os
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-def set_token():
-    flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+if not os.path.exists("token.json"):
+    load_dotenv()
+    flow = InstalledAppFlow.from_client_secrets_file(os.getenv("CREDENTIALS_FILE"), SCOPES)
     creds = flow.run_local_server(port=8080)
 
     # Save the credentials (includes refresh token if offline access was granted)
     with open("token.json", "w") as token:
         token.write(creds.to_json())
-
-
-if not os.path.exists("token.json"):
-    set_token()
 
 creds = Credentials.from_authorized_user_file("token.json", SCOPES)
 
@@ -41,7 +39,7 @@ def delete_event(eventId: str):
 
 def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
     if end_date == "":
-        end_date = None # This is redundant now, but might be useful later
+        end_date = None
 
     try:
         print(f"Getting the next {max_amount} events, from {start_date} to {end_date}")
