@@ -1,10 +1,10 @@
 from openai import OpenAI
 from middleware import *
 import json
-from pathlib import Path
 from tzlocal import get_localzone
 
 
+load_dotenv()
 OPENAI_API_KEY = os.getenv("API_KEY")
 
 client = OpenAI(api_key=OPENAI_API_KEY)

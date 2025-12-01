@@ -50,7 +50,8 @@ def list_events(start_date=get_current_date(), end_date=None, max_amount=20):
                 timeMin=start_date,
                 timeMax=end_date,
                 maxResults=max_amount,
-                singleEvents=False
+                singleEvents=True,
+                orderBy="startTime"
             )
             .execute()
         )
