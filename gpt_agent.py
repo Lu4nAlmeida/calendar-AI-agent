@@ -2,6 +2,7 @@ from openai import OpenAI
 from middleware import *
 import json
 from tzlocal import get_localzone
+import time
 
 
 load_dotenv()
@@ -14,6 +15,7 @@ You are a Google Calendar AI Agent Assistant, your job is to help the user organ
 Do not include a follow up question at the end of each response unless trying to clarify something about the user's request.
 Current Date: {get_current_date()}
 Timezone: {str(get_localzone())}
+School Calendar Id: luan.tobias@concordiahanoi.org
 '''
 
 # Test prompts
@@ -46,6 +48,9 @@ while True:
         # Append user message
         input_list.append({"role": "user", "content": user_input})
 
+    print("Thinking...")
+    start_time = time.time()
+
     # Send to model
     response = client.responses.create(
         model="gpt-5",
@@ -56,12 +61,23 @@ while True:
     # Add model response to context
     input_list += response.output
 
+    end_time = time.time()
+
+    print(f"Agent thought for {end_time - start_time:.2f} seconds.")
+
     # Handle any function calls
     for item in response.output:
         if item.type == "function_call":
             args = json.loads(item.arguments)
             if item.name == "list_events":
                 events = list_events(**args)
+                input_list.append({
+                    "type": "function_call_output",
+                    "call_id": item.call_id,
+                    "output": json.dumps({"events": events})
+                })
+            elif item.name == "search_events":
+                events = search_event(**args)
                 input_list.append({
                     "type": "function_call_output",
                     "call_id": item.call_id,

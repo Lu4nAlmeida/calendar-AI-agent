@@ -5,7 +5,7 @@
         "description": "Creates an event on the user's Google Calendar, can also create recurring events.",
         "parameters": {
             "type": "object",
-            "description": "The event's body formatted to Google's Event Resource schema, when inputting time use ISO 8601 format (YYYY-MM-DDTHH:MM:SS±HH:MM)",
+            "description": "The event's body formatted to Google's Event Resource schema, when inputting time use ISO 8601 format (YYYY-MM-DDTHH:MM:SS±HH:MM). The date, in the format \"yyyy-mm-dd\", if this is an all-day event.",
             "properties": {
                 "summary": {"type": "string"},
                 "description": {"type": "string"},
@@ -95,6 +95,10 @@
                 "max_amount": {
                     "type": "number",
                     "description": "Integer value representing the amount of events to be listed (already set to 20 by default | avoid setting this number to more than 50)."
+                },
+                "calendarId": {
+                    "type": "string",
+                    "description": "Calendar to list events from (already set to \"primary\" by default)."
                 }
             }
         }
@@ -117,7 +121,7 @@
     {
         "type": "function",
         "name": "update_event",
-        "description": "Updates an event or recurring event with edits on the user's calendar (requires eventId, use 'list_events' to get it)",
+        "description": "Updates an event or recurring event with edits on the user's calendar (requires eventId, use 'list_events' to get it). The date, in the format \"yyyy-mm-dd\", if this is an all-day event.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -206,6 +210,25 @@
                 }
             },
             "required": ["eventId"]
+        }
+    },
+    {
+        "type": "function",
+        "name": "search_events",
+        "description": "Searches for an event within the next 365 days using a keyword. If no exact matches are found, looks for close matches.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "keyword": {
+                    "type": "string",
+                    "description": "Searches for an event with this keyword in either the event's summary or description."
+                },
+                "calendarId": {
+                    "type": "string",
+                    "description": "Calendar to be searched on (already set to \"primary\" by default)"
+                }
+            },
+            "required": ["keyword"]
         }
     }
 ]
