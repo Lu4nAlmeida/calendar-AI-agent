@@ -19,13 +19,13 @@ School Calendar Id: luan.tobias@concordiahanoi.org
 '''
 
 # Test prompts
-'Can you create 3 events this afternoon? Eat dinner at 8pm, do homework at 6pm and sleep at 10pm'
-'Can you create a recurring event reminding me to eat lunch everyday at 1pm?'
-'Can you delete my next event?'
-'Can you delete my next recurring event?'
+'Create 3 events this afternoon: Eat dinner at 8pm, do homework at 6pm and sleep at 10pm'
+'Create a recurring event reminding me to drink water everyday at 4pm'
+'Delete my next recurring event'
 'What is my next event?'
-'Can you create an event called test tomorrow at noon, make it a different color and set a reminder 30 minutes prior?'
-'Could you change the test event name to free time, and make it color red (also remove the reminder)'
+'Create an event called test tomorrow at noon, make it a different color and set a reminder 30 minutes prior'
+'Change the test event name to free time, and make it color red (also remove the reminder)'
+'How many days until the New Year?'
 
 # Load tool definitions
 with open('tools.json', 'r') as file:
@@ -63,7 +63,7 @@ while True:
 
     end_time = time.time()
 
-    print(f"Agent thought for {end_time - start_time:.2f} seconds.")
+    print(f"Thought for {end_time - start_time:.2f} seconds.")
 
     # Handle any function calls
     for item in response.output:
@@ -103,6 +103,13 @@ while True:
                     "type": "function_call_output",
                     "call_id": item.call_id,
                     "output": json.dumps({"event": event})
+                })
+            elif item.name == "count_days":
+                num_days = count_days(**args)
+                input_list.append({
+                    "type": "function_call_output",
+                    "call_id": item.call_id,
+                    "output": json.dumps({"num_days": num_days})
                 })
 
     # Check if model responded or is still waiting for a function call output

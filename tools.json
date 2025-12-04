@@ -230,5 +230,24 @@
             },
             "required": ["keyword"]
         }
+    },
+    {
+        "type": "function",
+        "name": "count_days",
+        "description": "Counts the amount of days in between two dates.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string",
+                    "description": "Ending date in standard ISO 8601 format."
+                },
+                "start_date": {
+                    "type": "string",
+                    "description": "Starting date in standard ISO 8601 format (already set to current date by default)"
+                }
+            },
+            "required": ["end_date"]
+        }
     }
 ]

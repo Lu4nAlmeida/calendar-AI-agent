@@ -33,6 +33,16 @@ def next_year():
     return (datetime.datetime.today() + datetime.timedelta(days=365)).astimezone().replace(microsecond=0).isoformat()
 
 
+def count_days(end_date, start_date=get_current_date()):
+    print(f"Counting days from {start_date} to {end_date}.")
+
+    # parse ISO dates (accepts YYYY-MM-DD or full ISO timestamp)
+    start = datetime.datetime.fromisoformat(start_date).date()
+    end = datetime.datetime.fromisoformat(end_date).date()
+
+    return (end - start).days
+
+
 def delete_event(eventId: str, calendarId="primary"):
     try:
         service.events().delete(calendarId=calendarId, eventId=eventId).execute()
