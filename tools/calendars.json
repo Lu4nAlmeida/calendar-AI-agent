@@ -1,0 +1,11 @@
+[
+  {
+    "id": "primary",
+    "summary": "Personal Calendar",
+    "description": "Main calendar",
+    "location": "",
+    "timeZone": "",
+    "dataOwner": "",
+    "type": "Personal"
+  }
+]
