@@ -11,16 +11,16 @@ from difflib import SequenceMatcher
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-if not os.path.exists("token.json"):
+if not os.path.exists("env/token.json"):
     load_dotenv()
     flow = InstalledAppFlow.from_client_secrets_file(os.getenv("CREDENTIALS_FILE"), SCOPES)
     creds = flow.run_local_server(port=8080)
 
     # Save the credentials (includes refresh token if offline access was granted)
-    with open("token.json", "w") as token:
+    with open("env/token.json", "w") as token:
         token.write(creds.to_json())
 
-creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+creds = Credentials.from_authorized_user_file("env/token.json", SCOPES)
 
 
 service = build("calendar", "v3", credentials=creds)

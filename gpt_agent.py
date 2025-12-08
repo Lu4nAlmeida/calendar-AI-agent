@@ -5,7 +5,7 @@ from tzlocal import get_localzone
 import time
 
 
-load_dotenv()
+load_dotenv(dotenv_path='env/.env')
 OPENAI_API_KEY = os.getenv("API_KEY")
 
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -15,7 +15,8 @@ You are a Google Calendar AI Agent Assistant, your job is to help the user organ
 Do not include a follow up question at the end of each response unless trying to clarify something about the user's request.
 Current Date: {get_current_date()}
 Timezone: {str(get_localzone())}
-School Calendar Id: luan.tobias@concordiahanoi.org
+Calendars: {json.load(open('tools/calendars.json', 'r'))}
+Contacts: {json.load(open('tools/contacts.json', 'r'))}
 '''
 
 # Test prompts
@@ -28,7 +29,7 @@ School Calendar Id: luan.tobias@concordiahanoi.org
 'How many days until the New Year?'
 
 # Load tool definitions
-with open('tools.json', 'r') as file:
+with open('tools/tools.json', 'r') as file:
     tools = json.load(file)
 
 # Conversation history
