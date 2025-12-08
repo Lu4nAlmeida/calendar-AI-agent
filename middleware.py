@@ -12,7 +12,7 @@ from difflib import SequenceMatcher
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 if not os.path.exists("env/token.json"):
-    load_dotenv()
+    load_dotenv(dotenv_path='env/.env')
     flow = InstalledAppFlow.from_client_secrets_file(os.getenv("CREDENTIALS_FILE"), SCOPES)
     creds = flow.run_local_server(port=8080)
 
